@@ -185,6 +185,12 @@ class CheckHttp < Sensu::Plugin::Check::CLI
          description: 'Do not use proxy server even from environment http_proxy setting',
          default: false
 
+  option :no_critical,
+         long: '--nocritical',
+         boolean: true,
+         description: 'Issue WARNING instead of CRITICAL',
+         default: false
+
   def run
     if config[:url]
       uri = URI.parse(config[:url])
@@ -198,6 +204,10 @@ class CheckHttp < Sensu::Plugin::Check::CLI
         unknown 'No URL specified'
       end
       config[:port] ||= config[:ssl] ? 443 : 80
+    end
+
+    if config[:no_critical]
+      alias :critical :warning
     end
 
     begin
